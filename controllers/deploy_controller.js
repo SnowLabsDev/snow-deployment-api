@@ -59,7 +59,7 @@ module.exports = {
         console.log(err);
       });
 
-      res.send({ "addressDeployedTo": result.options.address });
+      res.send({ "contractId": contractId, "ethAddress": result.options.address });
 
   },
 };
