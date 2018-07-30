@@ -2,6 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 const solc = require('solc');
+const axios = require('axios');
 
 // DEPLOYMENT DEPENDENCIES
 const HDWalletProvider = require('truffle-hdwallet-provider');
@@ -19,12 +20,11 @@ const deployFromAddress = "0x7120FF8FE37015CF708672Fef018849D3c0717dB";
 module.exports = {
 
   compile(req, res, next) {
-
-    const props = req.body;
+    const compileProps = req.body;
     const {
       contractType,
       contractId,
-     } = props;
+    } = compileProps;
 
     contractFilename = contractType + '.sol';
 
@@ -33,21 +33,29 @@ module.exports = {
 
     const iter = ':' + contractType;
 
+    // send response that we're starting the compilation process
+    res.send({"compiling": "true"});
+
     const { interface, bytecode } = solc.compile(source, 1).contracts[iter];
 
-    res.send({ "contractId": contractId, "ethABI": interface, "ethBytecode": bytecode });
+    axios.put(`https://snowlabsdev-api.herokuapp.com/api/contracts/id/${contractId}`, {
+      ethABI: interface,
+      ethBytecode: bytecode
+    });
   },
 
   async deploy(req, res, next) {
-
-    const props = req.body;
+    const deployProps = req.body;
 
     const {
       contractId,
       ethABI,
       ethBytecode,
       arguments
-    } = props;
+    } = deployProps;
+
+    // send the response that we're starting the deployment process
+    res.send({"deploying": "true"});
 
     const result = await new web3.eth.Contract(JSON.parse(ethABI))
       .deploy({
@@ -59,7 +67,8 @@ module.exports = {
         console.log(err);
       });
 
-      res.send({ "contractId": contractId, "ethAddress": result.options.address });
-
+      axios.put(`https://snowlabsdev-api.herokuapp.com/api/contracts/id/${contractId}`, {
+        ethAddress: result.options.address
+      });
   },
 };

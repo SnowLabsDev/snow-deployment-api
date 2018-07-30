@@ -6,9 +6,8 @@ const routes = require('./routes/routes');
 
 const app = express();
 
-mongoose.Promise = global.Promise; // set promise type
-
-//mongoose.connect('mongodb://localhost:27017/snow-api-test');
+// set promise type
+mongoose.Promise = global.Promise;
 
 app.use(bodyParser.json());
 routes(app);

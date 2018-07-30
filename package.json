@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/SnowLabsDev/snow-deployment-api#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "ethereumjs-wallet": "^0.6.0",
     "express": "^4.16.3",
